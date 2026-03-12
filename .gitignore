@@ -1,0 +1,28 @@
+# Imágenes de virtualización
+*.iso
+*.ova
+*.vdi
+*.vmdk
+*.vhd
+*.vhdx
+*.ovf
+*.qcow2
+*.7z
+
+# Archivos comprimidos grandes
+*.zip
+*.tar.gz
+*.tgz
+
+# Carpeta donde guardes las imágenes localmente
+Imagenes_VM/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/
