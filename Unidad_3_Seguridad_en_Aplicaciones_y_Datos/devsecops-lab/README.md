@@ -97,18 +97,113 @@ devsecops-lab/
 ├── Dockerfile
 ├── README.md
 ├── app/
-│   ├── app.py              ← API Flask (analizar antes del pipeline)
-│   └── requirements.txt    ← dependencias del proyecto
+│   ├── app.py              <- API Flask (analizar antes del pipeline)
+│   └── requirements.txt    <- dependencias del proyecto
 ├── tests/
-│   └── test_app.py         ← tests básicos con pytest
+│   └── test_app.py         <- tests básicos con pytest
 └── .github/
     └── workflows/
-        └── security.yml    ← pipeline de seguridad (completar en el lab)
+        └── security.yml    <- pipeline de seguridad (completar en el lab)
 ```
 
 ---
 
-## ⚠ Advertencia
+## Pistas para el análisis
+
+Antes de correr el pipeline, revisa `app/app.py` manualmente.
+Hay al menos **5 problemas de seguridad** distribuidos en el código.
+Las siguientes pistas te orientan sin darte la respuesta — úsalas solo si te quedas atascado.
+
+<details>
+<summary>Pista 1 — Configuración inicial</summary>
+
+Revisa las primeras líneas del archivo, antes de cualquier definición de ruta.
+¿Encuentras valores sensibles escritos directamente en el código fuente?
+
+Reflexiona: ¿qué implicaría que este repositorio fuera público en GitHub?
+¿Cómo debería manejarse ese tipo de información en una aplicación real?
+
+Referencia: OWASP Top 10 A02:2021 — Cryptographic Failures.
+
+</details>
+
+<details>
+<summary>Pista 2 — Búsqueda de usuarios</summary>
+
+Observa cómo se construye la consulta a la base de datos en el endpoint `/user`.
+¿El valor que ingresa el usuario se valida o se inserta directamente en la consulta?
+
+Prueba buscar un usuario usando este valor exacto como nombre:
+```
+' OR '1'='1
+```
+¿Qué devuelve la API? ¿Debería devolver eso?
+
+Referencia: OWASP Top 10 A03:2021 — Injection.
+
+</details>
+
+<details>
+<summary>Pista 3 — Diagnóstico de red</summary>
+
+Mira cómo se procesa el parámetro `host` antes de ejecutar el comando del sistema operativo.
+¿Se sanitiza de alguna forma antes de usarlo?
+
+Desde el panel de Diagnóstico de Red, prueba este valor como host:
+```
+8.8.8.8; whoami
+```
+¿Qué aparece en la salida? ¿El servidor debería permitir eso?
+
+Referencia: OWASP Top 10 A03:2021 — Injection (OS Command Injection).
+
+</details>
+
+<details>
+<summary>Pista 4 — Visor de logs</summary>
+
+El endpoint `/logs` recibe un nombre de archivo y lo lee del servidor.
+¿Se verifica de alguna forma qué archivos están permitidos leer?
+
+Prueba pasar este valor como nombre de archivo:
+```
+../../etc/passwd
+```
+¿Qué responde el servidor?
+
+Referencia: Path Traversal / Directory Traversal — CWE-22.
+
+</details>
+
+<details>
+<summary>Pista 5 — Arranque del servidor</summary>
+
+Busca la última línea del archivo donde se inicia la aplicación Flask.
+Hay dos parámetros que, combinados, representan un riesgo incluso en desarrollo.
+
+Mira lo que imprime la terminal cuando arrancas la app.
+¿Qué información sensible aparece en los logs del servidor?
+¿Qué podría hacer alguien en tu misma red con esa información?
+
+Referencia: CWE-94 / Flask debug mode exposure.
+
+</details>
+
+---
+
+## Preguntas de entrega
+
+Una vez analizado el código y ejecutado el pipeline, responde en tu reporte:
+
+1. Lista cada vulnerabilidad encontrada: nombre, línea aproximada en el código y categoria OWASP/CWE.
+2. ¿Qué herramienta del pipeline detectó cada una? ¿Alguna no fue detectada automáticamente?
+3. Para cada vulnerabilidad, propone el cambio mínimo de código que la corregiría.
+4. Revisa `requirements.txt`: ¿qué reportó pip-audit? ¿Qué versiones son seguras?
+5. ¿Qué configuró Dependabot y qué ventaja ofrece frente a una auditoría manual?
+
+---
+
+## Advertencia
 
 Este código contiene vulnerabilidades con fines educativos.
 **NO usar en producción. NO ejecutar en redes no controladas.**
