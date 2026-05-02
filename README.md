@@ -30,10 +30,11 @@ semanales y ejercicios de Red y Blue Team.
 | `Administracion/` | Plan de estudios oficial de la materia |
 | `Templates/` | Plantillas base para guías de estudio y laboratorio |
 | `Unidad_1_Fundamentos/` | Fundamentos de Arquitectura de Seguridad |
-| `Unidad_2_Redes_Seguras/` | Diseño de Redes Seguras |
-| `Unidad_3_Aplicaciones_y_Datos/` | Seguridad en Aplicaciones y Datos |
-| `Unidad_4_Resiliencia/` | Resiliencia y Operaciones Seguras |
+| `Unidad_2_Diseño_de_Redes/` | Diseño de Redes Seguras |
+| `Unidad_3_Seguridad_en_Aplicaciones_y_Datos/` | Seguridad en Aplicaciones y Datos |
+| `Unidad_4_Resiliencia_y_Operaciones/` | Resiliencia y Operaciones Seguras |
 | `Red_Blue_Team/` | Escenarios y rúbricas para ejercicios ofensivos y defensivos |
+| `.github/workflows/` | Pipeline CI/CD de seguridad — Lab DevSecOps (Semana 9) |
 
 ---
 
@@ -179,4 +180,4 @@ reproducción o uso fuera del contexto del curso sin autorización expresa.
 
 ---
 
-Última actualización: marzo 2026*
+Última actualización: mayo 2026

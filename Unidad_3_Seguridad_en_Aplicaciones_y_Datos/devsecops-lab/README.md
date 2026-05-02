@@ -6,10 +6,13 @@
 ## Instrucciones del laboratorio
 
 1. Hacer **fork** de este repositorio en tu cuenta de GitHub
-2. Navegar a `Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/`
+2. Clonar el fork y navegar a `Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/`
 3. Levantar la aplicación (ver sección **Cómo correr la app**) y explorar los endpoints
 4. Revisar `app/app.py` e identificar las vulnerabilidades presentes en el código
-5. Completar `.github/workflows/security.yml` con el pipeline de seguridad
+5. Completar el pipeline de seguridad — el archivo está en la **raíz del repositorio**:
+   `.github/workflows/security.yml`
+   > GitHub Actions solo detecta workflows en `/.github/workflows/` de la raíz del repo,
+   > no en subcarpetas. Las rutas dentro del YAML ya apuntan a la carpeta correcta del lab.
 6. Activar Dependabot en **Settings → Security → Dependabot**
 7. Hacer commit del workflow, ir a la pestaña **Actions** y analizar los resultados
 
@@ -93,18 +96,24 @@ curl "http://localhost:5000/ping?host=8.8.8.8"
 ## Estructura del laboratorio
 
 ```
-devsecops-lab/
-├── Dockerfile
-├── README.md
-├── app/
-│   ├── app.py              <- API Flask (analizar antes del pipeline)
-│   └── requirements.txt    <- dependencias del proyecto
-├── tests/
-│   └── test_app.py         <- tests básicos con pytest
-└── .github/
-    └── workflows/
-        └── security.yml    <- pipeline de seguridad (completar en el lab)
+lc_arquitectura_de_sistemas_de_seguridad/   ← raíz del repositorio
+├── .github/
+│   └── workflows/
+│       └── security.yml    <- pipeline de seguridad (completar en el lab)
+│
+└── Unidad_3_Seguridad_en_Aplicaciones_y_Datos/
+    └── devsecops-lab/
+        ├── Dockerfile
+        ├── README.md
+        ├── app/
+        │   ├── app.py              <- API Flask (analizar antes del pipeline)
+        │   └── requirements.txt    <- dependencias del proyecto
+        └── tests/
+            └── test_app.py         <- tests básicos con pytest
 ```
+
+> El `security.yml` está en la raíz porque GitHub Actions solo detecta
+> workflows en `/.github/workflows/` del repositorio principal.
 
 ---
 
