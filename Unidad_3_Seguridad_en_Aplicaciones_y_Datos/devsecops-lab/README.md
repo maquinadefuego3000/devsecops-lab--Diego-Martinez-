@@ -6,15 +6,29 @@
 ## Instrucciones del laboratorio
 
 1. Hacer **fork** de este repositorio en tu cuenta de GitHub
-2. Clonar el fork y navegar a `Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/`
-3. Levantar la aplicación (ver sección **Cómo correr la app**) y explorar los endpoints
-4. Revisar `app/app.py` e identificar las vulnerabilidades presentes en el código
-5. Completar el pipeline de seguridad — el archivo está en la **raíz del repositorio**:
+
+2. **Habilitar GitHub Actions en tu fork** — paso obligatorio que GitHub no hace automáticamente:
+   - Ve a la pestaña **Actions** de tu fork
+   - Haz clic en **"I understand my workflows, go ahead and enable them"**
+   - Sin este paso el pipeline nunca se ejecutará, sin importar qué commits hagas
+
+3. Clonar el fork y navegar a `Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/`
+
+4. Levantar la aplicación (ver sección **Cómo correr la app**) y explorar los endpoints
+
+5. Revisar `app/app.py` e identificar las vulnerabilidades presentes en el código
+
+6. Completar el pipeline de seguridad — el archivo está en la **raíz del repositorio**:
    `.github/workflows/security.yml`
    > GitHub Actions solo detecta workflows en `/.github/workflows/` de la raíz del repo,
    > no en subcarpetas. Las rutas dentro del YAML ya apuntan a la carpeta correcta del lab.
-6. Activar Dependabot en **Settings → Security → Dependabot**
-7. Hacer commit del workflow, ir a la pestaña **Actions** y analizar los resultados
+
+7. Activar Dependabot en **Settings → Security → Dependabot**
+
+8. Hacer commit del workflow y verificar en la pestaña **Actions**:
+   - Puedes disparar el pipeline manualmente con el botón **"Run workflow"** sin necesidad de hacer push
+   - SAST aparecerá en rojo si Semgrep detecta vulnerabilidades — eso es correcto y esperado
+   - Los tests corren independientemente del resultado de SAST
 
 ---
 

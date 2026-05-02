@@ -14,12 +14,17 @@ name: Pipeline de Seguridad DevSecOps
 
 # ─── DISPARADORES ────────────────────────────────────────────────────────────
 # Este bloque ya está completo. Define cuándo se ejecuta el pipeline.
+#
+# workflow_dispatch → permite correr el pipeline manualmente desde la
+#   pestaña Actions sin necesidad de hacer un nuevo commit.
+#
 # ¿Por qué se incluye pull_request y no solo push?
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:   # ejecución manual desde la pestaña Actions
 
 # ─── TRABAJOS (JOBS) ─────────────────────────────────────────────────────────
 # Cada job es una etapa independiente del pipeline.
@@ -31,10 +36,18 @@ jobs:
   # ETAPA 1 — SAST (Static Application Security Testing)
   # Herramienta: Semgrep — analiza el código fuente en busca de patrones
   # vulnerables sin ejecutar la aplicación.
+  #
+  # continue-on-error: true → el job se marca como fallido (rojo) si
+  #   Semgrep detecta vulnerabilidades, pero NO bloquea las etapas
+  #   siguientes. Esto refleja el modelo "informar sin bloquear" común
+  #   en pipelines de seguridad que priorizan visibilidad sobre el bloqueo.
+  #   En un pipeline de producción más estricto se quitaría esta opción.
   # ═══════════════════════════════════════════════════════════════════════════
   sast:
     name: SAST - Semgrep
     runs-on: ubuntu-latest
+    continue-on-error: true   # falla visible pero no bloquea tests
+    timeout-minutes: 10
 
     steps:
       # Paso 1: descargar el código del repositorio al runner.
@@ -58,7 +71,8 @@ jobs:
       #   p/secrets         → credenciales y secretos en el código
       #   p/sql-injection   → inyección SQL
       #
-      # Ruta a analizar: Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/
+      # Ruta a analizar:
+      #   Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/
       #
       # Agrega --error para que el job falle si Semgrep encuentra algo.
       # ¿Qué implicación tiene eso en un pipeline de CI/CD real?
@@ -75,6 +89,7 @@ jobs:
   sca:
     name: SCA - pip-audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout del repositorio
@@ -108,12 +123,17 @@ jobs:
   # ═══════════════════════════════════════════════════════════════════════════
   # ETAPA 3 — TESTS
   # Herramienta: pytest — ejecuta las pruebas unitarias del proyecto.
-  # Esta etapa corre DESPUÉS de las etapas anteriores (ver "needs").
+  #
+  # needs: [sast, sca] → esta etapa espera a que SAST y SCA terminen.
+  # Como SAST tiene continue-on-error: true, los tests corren aunque
+  # Semgrep haya encontrado vulnerabilidades. Esto permite ver en el
+  # mismo pipeline: qué falló en seguridad Y si los tests pasan.
   # ═══════════════════════════════════════════════════════════════════════════
   tests:
     name: Tests - pytest
     runs-on: ubuntu-latest
     needs: [ sast, sca ]   # espera a que SAST y SCA terminen primero
+    timeout-minutes: 10
 
     steps:
       - name: Checkout del repositorio
