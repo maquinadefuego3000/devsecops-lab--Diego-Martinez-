@@ -78,8 +78,27 @@ jobs:
       # ¿Qué implicación tiene eso en un pipeline de CI/CD real?
       - name: Ejecutar análisis SAST
         run: |
-          # TODO: escribe aquí el comando de Semgrep con los 4 rulesets
+          semgrep --config p/python \
+          --config p/owasp-top-ten \
+          --config p/secrets \
+          --config p/sql-injection \
+          --error \
+          --json \
+          --output=semgrep-results.json \
+          Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/ 
+          
+          semgrep --config p/python \
+          --config p/owasp-top-ten \
+          --config p/secrets \
+          --config p/sql-injection \
+          Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/
 
+      - name: Guardar resultados SAST
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: semgrep-results
+          path: semgrep-results.json
 
   # ═══════════════════════════════════════════════════════════════════════════
   # ETAPA 2 — SCA (Software Composition Analysis)
@@ -116,9 +135,19 @@ jobs:
       #           ¿Cuáles de los paquetes tienen versiones seguras disponibles?
       - name: Instalar y ejecutar pip-audit
         run: |
-          # TODO: instala pip-audit
-          # TODO: ejecuta la auditoría sobre el requirements.txt del lab
+          pip install pip-audit
+          pip-audit -r Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/requirements.txt \
+          --format=json \
+          --output=audit-report.json || true
+          echo "--- Reporte de CVEs ---"
+          pip-audit -r Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/requirements.txt
 
+      - name: Guardar reporte de auditoria
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pip-audit-report
+          path: audit-report.json
 
   # ═══════════════════════════════════════════════════════════════════════════
   # ETAPA 3 — TESTS
@@ -159,9 +188,9 @@ jobs:
       # Pregunta: ¿qué pasa si un test falla? ¿Se bloquea el merge del PR?
       - name: Instalar dependencias
         run: |
-          # TODO: instala las dependencias del proyecto
-          # TODO: instala pytest
+          pip install -r Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/requirements.txt
+          pip install pytest
 
       - name: Ejecutar tests
         run: |
-          # TODO: ejecuta pytest sobre la carpeta tests/ del lab
+          pytest Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/tests/ -v
