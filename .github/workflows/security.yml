@@ -62,20 +62,6 @@ jobs:
 
       # TODO ▼ ─────────────────────────────────────────────────────────────
       # Paso 3: ejecutar el análisis de Semgrep.
-      #
-      # Comando base:  semgrep --config <ruleset> <ruta-a-analizar>
-      #
-      # Rulesets requeridos (sepáralos con espacios usando --config cada vez):
-      #   p/python          → reglas generales para Python
-      #   p/owasp-top-ten   → vulnerabilidades del OWASP Top 10
-      #   p/secrets         → credenciales y secretos en el código
-      #   p/sql-injection   → inyección SQL
-      #
-      # Ruta a analizar:
-      #   Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/
-      #
-      # Agrega --error para que el job falle si Semgrep encuentra algo.
-      # ¿Qué implicación tiene eso en un pipeline de CI/CD real?
       - name: Ejecutar análisis SAST
         run: |
           semgrep --config p/python \
@@ -115,7 +101,6 @@ jobs:
         uses: actions/checkout@v4
 
       # Paso 2: configurar la versión de Python en el runner.
-      # La action "setup-python" hace disponible el comando python y pip.
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
@@ -123,16 +108,6 @@ jobs:
 
       # TODO ▼ ─────────────────────────────────────────────────────────────
       # Paso 3: instalar pip-audit y ejecutar la auditoría.
-      #
-      # pip-audit se instala con pip igual que cualquier paquete.
-      # Para auditar un archivo de dependencias específico:
-      #   pip-audit -r <ruta-al-requirements.txt>
-      #
-      # Recuerda: el requirements.txt está en:
-      #   Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/requirements.txt
-      #
-      # Pregunta: ¿qué CVEs aparecen al correr la auditoría?
-      #           ¿Cuáles de los paquetes tienen versiones seguras disponibles?
       - name: Instalar y ejecutar pip-audit
         run: |
           pip install pip-audit
@@ -148,15 +123,10 @@ jobs:
         with:
           name: pip-audit-report
           path: audit-report.json
-         
+
   # ═══════════════════════════════════════════════════════════════════════════
   # ETAPA 3 — TESTS
   # Herramienta: pytest — ejecuta las pruebas unitarias del proyecto.
-  #
-  # needs: [sast, sca] → esta etapa espera a que SAST y SCA terminen.
-  # Como SAST tiene continue-on-error: true, los tests corren aunque
-  # Semgrep haya encontrado vulnerabilidades. Esto permite ver en el
-  # mismo pipeline: qué falló en seguridad Y si los tests pasan.
   # ═══════════════════════════════════════════════════════════════════════════
   tests:
     name: Tests - pytest
@@ -175,17 +145,6 @@ jobs:
 
       # TODO ▼ ─────────────────────────────────────────────────────────────
       # Paso 3: instalar las dependencias e instalar pytest.
-      #
-      # Necesitas dos comandos:
-      #   a) instalar los paquetes desde:
-      #      Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/requirements.txt
-      #   b) instalar pytest (si no viene en requirements.txt)
-      #
-      # Luego ejecuta pytest indicando la carpeta de tests:
-      #   Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/tests/
-      # Agrega -v para ver el detalle de cada test.
-      #
-      # Pregunta: ¿qué pasa si un test falla? ¿Se bloquea el merge del PR?
       - name: Instalar dependencias
         run: |
           pip install -r Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/app/requirements.txt
@@ -194,4 +153,3 @@ jobs:
       - name: Ejecutar tests
         run: |
           pytest Unidad_3_Seguridad_en_Aplicaciones_y_Datos/devsecops-lab/tests/ -v
-       icaciones_y_Datos/devsecops-lab/tests/ -v
